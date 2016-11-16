@@ -13,7 +13,7 @@ ALL_ITEMS = ['description', 'humidity', 'temperature', 'pressure']
 # start app in background
 def start_app():
     with open('forecast.json','r') as f:
-        weather.forecast = weather.json.load(f)
+        weather.forecast = {obs['dt_txt']: obs for obs in weather.json.load(f)['list']}
     weather.app.run()
 
 t = Thread(None, start_app)

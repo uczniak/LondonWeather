@@ -1,10 +1,15 @@
 from flask import Flask, json, jsonify, request
 from math import ceil
+from datetime import datetime
 
 app = Flask(__name__)
 
 def convert_datetime(date, time):
-    return date[0:4] + "-" + date[4:6] + "-" + date[6:8] + " " + time[0:2] + ":" + time[2:4] + ":00"
+    try:
+        requested_datetime = datetime.strptime(date+'/'+time, "%Y%m%d/%H%M")
+    except ValueError:
+        return None
+    return datetime.strftime(requested_datetime, "%Y-%m-%d %H:%M:%S")
 
 def get_summary(snapshot):
     return dict(
@@ -18,9 +23,14 @@ def get_summary(snapshot):
 @app.route('/weather/london/<date>/<time>/')
 def show_summary(date,time):
     datetime_as_string = convert_datetime(date,time)
-    for snapshot in forecast['list']:
-        if snapshot['dt_txt'] == datetime_as_string:
-            return jsonify(get_summary(snapshot))
+    if datetime_as_string is None:
+        return jsonify(
+            status="error",
+            message="Invalid date or time entered"
+        )
+    if datetime_as_string in forecast:
+        snapshot = forecast[datetime_as_string]
+        return jsonify(get_summary(snapshot))
     # if date + time not found, return error object
     return jsonify(
         status = "error",
@@ -31,10 +41,15 @@ def show_summary(date,time):
 def show_item(date,time,item):
     if item in ['description', 'humidity', 'pressure', 'temperature']:
         datetime_as_string = convert_datetime(date,time)
-        for snapshot in forecast['list']:
-            if snapshot['dt_txt'] == datetime_as_string:
-                summary = get_summary(snapshot)
-                return jsonify({item: summary[item]})
+        if datetime_as_string is None:
+            return jsonify(
+                status="error",
+                message="Invalid date or time entered"
+            )
+        if datetime_as_string in forecast:
+            snapshot = forecast[datetime_as_string]
+            summary = get_summary(snapshot)
+            return jsonify({item: summary[item]})
         # if date + time not found, return error object
         return jsonify(
             status = "error",
@@ -47,5 +62,5 @@ def show_item(date,time,item):
 
 if __name__ in ["__main__"]:
     with open('forecast.json','r') as f:
-        forecast = json.load(f)
+        forecast = {obs['dt_txt']: obs for obs in json.load(f)['list']}
     app.run()
