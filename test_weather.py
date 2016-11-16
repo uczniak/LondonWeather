@@ -20,6 +20,12 @@ t = Thread(None, start_app)
 t.daemon = True
 t.start()
 
+def test__validation():
+    result_good = weather.convert_datetime('20161116','2029')
+    result_bad = weather.convert_datetime('9999foo','b@r4')
+    assert result_bad is None
+    assert result_good == "2016-11-16 20:29:00"
+
 def test_good():
     r = requests.get("http://localhost:5000/weather/london/20160705/2100/")
     data = r.json()
