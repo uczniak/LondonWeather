@@ -44,3 +44,6 @@ In case of invalid input or missing data, a JSON object with error message will 
 To run tests you need pytest (`pip install -U pytest`) and requests (`pip install requests`).
 
 While in project directory, simply type `pytest` to run the whole suite.
+
+To check test coverage, make sure you have pytest-cov (`pip install pytest-cov`) and run
+`pytest --cov=weather` from project folder.
