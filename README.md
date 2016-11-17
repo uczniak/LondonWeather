@@ -2,7 +2,7 @@
 Simple REST API for retrieving London weather forecast.
 
 ## Installation
-You need Python 3.x (tested on 3.5.1 and 3.5.2) and Flask (`pip install Flask`).
+You need Python (tested on 3.5.1+ and 2.7.12) and Flask (`pip install Flask`).
 
 To start the service simply run `weather.py`.
 
