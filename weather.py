@@ -1,11 +1,25 @@
 from flask import Flask, json, jsonify, request
+import requests
 from math import ceil
-from datetime import datetime
+from datetime import datetime, MINYEAR, timedelta
 
 app = Flask(__name__)
 
 with open('forecast.json', 'r') as f:
     forecast = {obs['dt_txt']: obs for obs in json.load(f)['list']}
+
+forecast['last_update'] = datetime(MINYEAR,1,1)
+
+def check_for_update():
+    if datetime.now() - forecast['last_update'] > timedelta(days=1):
+        update_forecast()
+
+def update_forecast():
+    r = requests.get("http://api.openweathermap.org/data/2.5/forecast?q=London,uk&APPID={appkey}"
+                     .format(appkey="164795a1df804b59afcc6bbf8e19bcfe"))
+    update_from_web = {obs['dt_txt']: obs for obs in r.json()['list']}
+    forecast.update(update_from_web)
+    forecast.update(last_update = datetime.now())
 
 def convert_datetime(date, time):
     try:
@@ -25,6 +39,7 @@ def get_summary(snapshot):
 
 @app.route('/weather/london/<date>/<time>/')
 def show_summary(date,time):
+    check_for_update()
     datetime_as_string = convert_datetime(date,time)
     if datetime_as_string is None:
         return jsonify(
@@ -42,6 +57,7 @@ def show_summary(date,time):
 
 @app.route('/weather/london/<date>/<time>/<item>/')
 def show_item(date,time,item):
+    check_for_update()
     if item in ['description', 'humidity', 'pressure', 'temperature']:
         datetime_as_string = convert_datetime(date,time)
         if datetime_as_string is None:
