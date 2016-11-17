@@ -1,4 +1,4 @@
-from flask import Flask, json, jsonify, request
+from flask import Flask, json, jsonify, request, redirect
 from flask_limiter import Limiter
 from flask_limiter.util import get_remote_address
 import requests
@@ -44,6 +44,10 @@ def get_summary(snapshot):
         pressure="{:.2f}".format(snapshot['main']['pressure']),
         humidity="{}%".format(snapshot['main']['humidity'])
     )
+
+@app.route('/')
+def show_docs():
+    return redirect("https://github.com/uczniak/LondonWeather/blob/master/README.md#api")
 
 @app.route('/weather/london/<date>/<time>/')
 def show_summary(date,time):
