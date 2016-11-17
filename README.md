@@ -1,11 +1,15 @@
 # LondonWeather
 Simple REST API for retrieving London weather forecast.
 
+Service is publicly available at `https://mateusz-weather.herokuapp.com/`
+
 ## Installation
-You need Python (tested on 3.5.1+ and 2.7.12) and:
+You need Python (tested on 3.5.2, and 2.7.12) and:
 * Flask (`pip install Flask`),
 * requests (`pip install requests`),
 * Flask-Limiter (`pip install Flask-Limiter`)
+
+or just `pip install -r requirements.txt` to install all dependencies.
 
 To start the service simply run `weather.py`.
 
