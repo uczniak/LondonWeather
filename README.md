@@ -58,3 +58,16 @@ and has to exhaust them first.
 
 To check test coverage, make sure you have pytest-cov (`pip install pytest-cov`) and run
 `pytest --cov=weather` from project folder.
+
+Alternatively, from project folder run:
+```
+vagrant up
+vagrant ssh
+```
+and from within the VM:
+```
+cd /vagrant
+pytest --cov=weather
+```
+or `python run_in_vm.py` to run service. It will be accessible
+on `http://localhost:5000` on host machine.
