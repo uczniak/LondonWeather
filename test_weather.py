@@ -1,5 +1,6 @@
 import requests
 from threading import Thread
+from datetime import datetime, timedelta
 import weather
 
 REF_DATA = {'description': "clear sky",
@@ -9,6 +10,9 @@ REF_DATA = {'description': "clear sky",
             'pressure': "1024.87"}
 
 ALL_ITEMS = ['description', 'humidity', 'temperature', 'pressure']
+
+# current global limit per hour - ensure tests don't use more per view
+LIMIT = 60
 
 # start app in background
 t = Thread(None, weather.app.run)
@@ -26,6 +30,13 @@ def test_good():
     data = r.json()
     for item in ALL_ITEMS:
         assert data[item] == REF_DATA[item]
+
+def test_current():
+    day_after_tomorrow = datetime.now() + timedelta(days=2)
+    day_after_tomorrow_url = datetime.strftime(day_after_tomorrow,"%Y%m%d/0000/")
+    r = requests.get("http://localhost:5000/weather/london/{}".format(day_after_tomorrow_url))
+    data = r.json()
+    assert len(data) == 4
 
 def test_single_item():
     for item in ALL_ITEMS:
@@ -57,3 +68,9 @@ def test_kelvin():
     data = r.json()
     assert len(data) == 1
     assert data['temperature'] == REF_DATA['kelvin']
+
+def test_rate_limit():
+    # this has to be the last test
+    for _ in range(LIMIT+1):
+        r = requests.get("http://localhost:5000/weather/london/20160705/2100/")
+    assert "Too Many Requests" in r.text

@@ -2,13 +2,18 @@
 Simple REST API for retrieving London weather forecast.
 
 ## Installation
-You need Python (tested on 3.5.1+ and 2.7.12) and Flask (`pip install Flask`).
+You need Python (tested on 3.5.1+ and 2.7.12) and:
+* Flask (`pip install Flask`),
+* requests (`pip install requests`),
+* Flask-Limiter (`pip install Flask-Limiter`)
 
 To start the service simply run `weather.py`.
 
 Service will be running on Flask default `http://localhost:5000/`.
 
 ## API
+Please kindly note that the use of API is limited to 60 requests per hour per view.
+
 There are following endpoints available:
 
 * `/weather/london/<date>/<time>/` where `<date>` is in YYYYMMDD format and `<time>` is in HHMM format.
@@ -41,9 +46,11 @@ In case of invalid input or missing data, a JSON object with error message will 
 ```
 
 ## Tests
-To run tests you need pytest (`pip install -U pytest`) and requests (`pip install requests`).
+To run tests you need pytest (`pip install -U pytest`).
 
 While in project directory, simply type `pytest` to run the whole suite.
+Please note that the tests can take a while as the last test checks if limits are applied correctly
+and has to exhaust them first.
 
 To check test coverage, make sure you have pytest-cov (`pip install pytest-cov`) and run
 `pytest --cov=weather` from project folder.

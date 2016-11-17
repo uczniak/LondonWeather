@@ -1,9 +1,17 @@
 from flask import Flask, json, jsonify, request
+from flask_limiter import Limiter
+from flask_limiter.util import get_remote_address
 import requests
 from math import ceil
 from datetime import datetime, MINYEAR, timedelta
 
 app = Flask(__name__)
+
+limiter = Limiter(
+    app,
+    key_func=get_remote_address,
+    global_limits=["60 per hour"],
+)
 
 with open('forecast.json', 'r') as f:
     forecast = {obs['dt_txt']: obs for obs in json.load(f)['list']}
