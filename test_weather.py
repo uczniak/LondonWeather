@@ -11,12 +11,7 @@ REF_DATA = {'description': "clear sky",
 ALL_ITEMS = ['description', 'humidity', 'temperature', 'pressure']
 
 # start app in background
-def start_app():
-    with open('forecast.json','r') as f:
-        weather.forecast = {obs['dt_txt']: obs for obs in weather.json.load(f)['list']}
-    weather.app.run()
-
-t = Thread(None, start_app)
+t = Thread(None, weather.app.run)
 t.daemon = True
 t.start()
 
@@ -38,6 +33,12 @@ def test_single_item():
         data = r.json()
         assert len(data) == 1
         assert data[item] == REF_DATA[item]
+
+def test_bad_datetime_format():
+    r = requests.get("http://localhost:5000/weather/london/9999foo/b@r4/")
+    data = r.json()
+    assert data['status'] == "error"
+    assert data['message'] == "Invalid date or time entered"
 
 def test_bad_datetime():
     r = requests.get("http://localhost:5000/weather/london/20160705/2101/")

@@ -4,6 +4,9 @@ from datetime import datetime
 
 app = Flask(__name__)
 
+with open('forecast.json', 'r') as f:
+    forecast = {obs['dt_txt']: obs for obs in json.load(f)['list']}
+
 def convert_datetime(date, time):
     try:
         requested_datetime = datetime.strptime(date+'/'+time, "%Y%m%d/%H%M")
@@ -61,6 +64,4 @@ def show_item(date,time,item):
     )
 
 if __name__ in ["__main__"]:
-    with open('forecast.json','r') as f:
-        forecast = {obs['dt_txt']: obs for obs in json.load(f)['list']}
     app.run()
